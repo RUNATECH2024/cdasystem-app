@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cdasystem_app
+    restart: unless-stopped
+    ports:
+      - "8080:80" # Aquí expones la tienda en el puerto 8080 de tu servidor
+    environment:
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=cdasystem
+      - DB_USERNAME=postgres
+      - DB_PASSWORD=1234
+    volumes:
+      - ./storage:/var/www/html/storage # Mantiene las fotos y logs seguros
+    depends_on:
+      - db
+
+  db:
+    image: postgres:16-alpine
+    container_name: cdasystem_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=cdasystem
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+    volumes:
+      - cdasystem_db_data:/var/lib/postgresql/data
+
+volumes:
+  cdasystem_db_data:
